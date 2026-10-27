@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1730">
+  <title>{% block title %}ScamShield{% endblock %} · ScamShield</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">S</span><span>Scam<span class="brand-light">Shield</span><small>JOB SAFETY PLATFORM</small></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}" data-i18n="nav_analyze"><span>◈</span> Analyze message</a>
+        <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" data-i18n="nav_dashboard"><span>▦</span> Dashboard</a>
+        <a href="{{ url_for('history_page') }}" class="{% if request.endpoint in ['history_page', 'analysis_detail'] %}active{% endif %}" data-i18n="nav_history"><span>◷</span> History</a>
+        <a href="{{ url_for('verify_job') }}" class="{% if request.endpoint == 'verify_job' %}active{% endif %}" data-i18n="nav_verify"><span>✓</span> Verify a job</a>
+        <a href="{{ url_for('learn') }}" class="{% if request.endpoint == 'learn' %}active{% endif %}" data-i18n="nav_learn"><span>▤</span> Safety center</a>
+      </nav>
+      <div class="sidebar-note"><span class="status-dot"></span><span data-i18n="local_note">Local analysis · Your messages stay on this device</span></div>
+      <div class="sidebar-bottom">SCAMSHIELD <span>v1.0</span></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" type="button" aria-label="Toggle navigation" id="menuToggle">☰</button>
+        <div class="breadcrumb"><span data-i18n="product">ScamShield</span><span class="crumb-sep">/</span><span class="muted">{% block page_label %}Safety{% endblock %}</span></div>
+        <div class="top-actions">
+          <label class="sr-only" for="languageSelect">Language</label>
+          <select id="languageSelect" class="language-select" aria-label="Language">
+            <option value="en">English</option><option value="ta">தமிழ்</option>
+          </select>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle light and dark mode" title="Toggle theme">◐</button>
+        </div>
+      </header>
+      <section class="page-content">{% block content %}{% endblock %}</section>
+      <footer class="footer"><span data-i18n="footer_note">ScamShield provides indicators, not proof. Verify every job independently.</span><a href="{{ url_for('learn') }}" data-i18n="privacy_link">Privacy & safety</a></footer>
+    </main>
+  </div>
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
