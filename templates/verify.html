@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Verify a job offer{% endblock %}
+{% block page_label %}Offer verification{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow" data-i18n="verification_check">VERIFICATION CHECKLIST</p><h1 data-i18n="verify_title">Make your own checks.</h1><p class="lead" data-i18n="verify_sub">Use official sources to assess an offer. ScamShield does not contact companies or verify details for you.</p></div></div>
+<form class="panel verify-form" method="post">
+  <h2 data-i18n="offer_details">Offer details</h2>
+  <div class="form-grid">
+    <div class="field"><label for="company" data-i18n="company_name">Company name</label><input id="company" name="company" value="{{ submitted.get('company','') }}" maxlength="200" required></div>
+    <div class="field"><label for="email" data-i18n="recruiter_email">Recruiter email</label><input id="email" type="email" name="email" value="{{ submitted.get('email','') }}" maxlength="254"></div>
+    <div class="field"><label for="title" data-i18n="job_title">Job title</label><input id="title" name="title" value="{{ submitted.get('title','') }}" maxlength="200"></div>
+    <div class="field"><label for="phone" data-i18n="phone_optional">Recruiter phone (optional)</label><input id="phone" name="phone" value="{{ submitted.get('phone','') }}" maxlength="40"></div>
+    <div class="field full-width"><label for="description" data-i18n="job_description">Job description or offer message</label><textarea id="description" name="description" maxlength="10000" required>{{ submitted.get('description','') }}</textarea></div>
+  </div>
+  <h2 data-i18n="checklist_title">Your verification checklist</h2>
+  <p class="muted" data-i18n="checklist_sub">Answer based on checks you have actually completed. Choose “Not sure” when you have not confirmed a point.</p>
+  <div class="checklist-form">
+    {% set questions = [('vacancy','Is the vacancy listed on the official company website?'),('domain','Does the recruiter email domain match the official company domain?'),('money','Is money being requested?'),('interview','Was an interview conducted?'),('realistic','Are the salary and job duties realistic?'),('contacts','Are the contact details independently verifiable?')] %}
+    {% for name, question in questions %}<fieldset class="check-question"><legend data-i18n="{{ name }}">{{ question }}</legend><div class="radio-options"><label><input type="radio" name="{{ name }}" value="yes" required><span data-i18n="yes">Yes</span></label><label><input type="radio" name="{{ name }}" value="no"><span data-i18n="no">No</span></label><label><input type="radio" name="{{ name }}" value="unsure"><span data-i18n="unsure">Not sure</span></label></div></fieldset>{% endfor %}
+  </div>
+  <button class="button button-primary" type="submit" data-i18n="create_summary">Create self-check summary</button>
+</form>
+{% if summary is string and summary %}<div class="toast-inline toast-warning">{{ summary }}</div>{% elif summary %}<section class="panel verification-summary"><p class="eyebrow" data-i18n="self_check_summary">SELF-CHECK SUMMARY</p><h2 data-i18n="checklist_results">Your checklist results</h2>{% set labels = {'vacancy': 'Official vacancy listing checked', 'domain': 'Recruiter email domain checked', 'money': 'Money requested', 'interview': 'Interview conducted', 'realistic': 'Salary and duties seem realistic', 'contacts': 'Contact details independently checked'} %}<ul class="check-results">{% for key, status in summary.checklist.items() %}<li><span data-i18n="{{ key }}">{{ labels[key] }}</span><strong class="{{ 'result-yes' if status == 'yes' else 'result-no' }}" data-i18n="{{ status if status in ['yes', 'no'] else 'unsure' }}">{{ 'Yes' if status == 'yes' else 'No' if status == 'no' else 'Not sure' }}</strong></li>{% endfor %}</ul><p class="callout">{{ summary.notice }}</p><p class="tamil-copy">இந்த சுய சரிபார்ப்பு உண்மைத்தன்மைக்கான சான்று அல்ல. நிறுவனத்தின் அதிகாரப்பூர்வ வழிகளைத் தனியாகப் பயன்படுத்தி சரிபார்க்கவும்.</p></section>{% endif %}
+{% endblock %}
