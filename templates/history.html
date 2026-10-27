@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Analysis history{% endblock %}
+{% block page_label %}History{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow" data-i18n="saved_analyses">SAVED ANALYSES</p><h1 data-i18n="history_title">Message history</h1><p class="lead" data-i18n="history_sub">Search, filter, export, or remove records stored in your local database.</p></div><a class="button button-outline" href="{{ url_for('export_csv') }}" data-i18n="export_csv">↓ Export CSV</a></div>
+<form class="panel filter-form" method="get">
+  <div class="field"><label for="q" data-i18n="search_messages">Search messages</label><input id="q" name="q" value="{{ filters.q }}" placeholder="Keyword" data-i18n-placeholder="keyword_placeholder"></div>
+  <div class="field"><label for="risk" data-i18n="risk_level">Risk level</label><select name="risk" id="risk"><option value="" data-i18n="all_levels">All levels</option>{% for label in ['HIGH RISK','SUSPICIOUS','LOW RISK'] %}<option value="{{ label }}" data-i18n="{{ 'risk_high' if label == 'HIGH RISK' else 'risk_suspicious' if label == 'SUSPICIOUS' else 'risk_low' }}" {% if filters.risk == label %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="start" data-i18n="from_date">From date</label><input type="date" id="start" name="start" value="{{ filters.start }}"></div>
+  <div class="field"><label for="end" data-i18n="to_date">To date</label><input type="date" id="end" name="end" value="{{ filters.end }}"></div>
+  <div class="field"><label for="sort" data-i18n="sort_by">Sort by</label><select name="sort" id="sort"><option value="latest" {% if filters.sort != 'risk' %}selected{% endif %} data-i18n="latest_first">Latest first</option><option value="risk" {% if filters.sort == 'risk' %}selected{% endif %} data-i18n="highest_risk">Highest risk</option></select></div>
+  <button class="button button-primary" type="submit" data-i18n="apply_filters">Apply filters</button>
+</form>
+<div class="history-toolbar"><span>{{ total }} <span data-i18n="records_found">records found</span></span>{% if total %}<button class="button button-danger-ghost" type="button" id="clearHistory" data-i18n="clear_history">Clear all history</button>{% endif %}</div>
+{% if records %}
+<div class="record-list">{% for record in records %}
+<article class="record-card panel">
+  <div class="record-top"><span class="risk-badge {{ 'badge-high' if record.result == 'HIGH RISK' else 'badge-warn' if record.result == 'SUSPICIOUS' else 'badge-safe' }}" data-i18n="{{ 'risk_high' if record.result == 'HIGH RISK' else 'risk_suspicious' if record.result == 'SUSPICIOUS' else 'risk_low' }}">{{ record.result }}</span><span class="record-score">{{ record.score }}<small>/100</small></span></div>
+  <p class="record-message">{{ record.message[:260] }}{% if record.message|length > 260 %}…{% endif %}</p>
+  <div class="record-footer"><small>{{ record.checked_at }} · #{{ record.id }}</small><div class="record-actions"><a class="text-link" href="{{ url_for('analysis_detail', analysis_id=record.id) }}" data-i18n="view_report">View report</a><button type="button" class="link-button delete-record" data-id="{{ record.id }}" data-i18n="delete">Delete</button></div></div>
+</article>
+{% endfor %}</div>
+{% if pages > 1 %}<nav class="pagination" aria-label="Pagination">{% if page > 1 %}<a href="{{ url_for('history_page', page=page-1, **filters) }}">← <span data-i18n="previous">Previous</span></a>{% endif %}<span>{{ page }} / {{ pages }}</span>{% if page < pages %}<a href="{{ url_for('history_page', page=page+1, **filters) }}"><span data-i18n="next">Next</span> →</a>{% endif %}</nav>{% endif %}
+{% else %}<section class="empty-state panel"><div class="empty-illustration">◷</div><h2 data-i18n="no_history">No matching history</h2><p data-i18n="no_history_desc">Try changing your filters, or analyze a job message to create your first record.</p><a class="button button-primary" href="{{ url_for('home') }}" data-i18n="analyze_message_link">Analyze a message</a></section>{% endif %}
+{% endblock %}
